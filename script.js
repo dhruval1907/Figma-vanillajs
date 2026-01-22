@@ -63,8 +63,39 @@ function createText() {
         zIndex: elements.length
     };
     elements.push(element);
-    renderElement(element);
+    renderElem(element);
     selectElement(element);
     updateLayers();
     saveDesign();
 }
+
+function renderElem(element) {
+    const div = document.createElement('div');
+    div.id = element.id;
+    div.className = 'element';
+    div.style.left = element.x + 'px';
+    div.style.top = element.y + 'px';
+    div.style.width = element.width + 'px';
+    div.style.height = element.height + 'px';
+    div.style.backgroundColor = element.backgroundColor;
+    div.style.transform = `rotate(${element.rotation}deg)`;
+    div.style.zIndex = element.zIndex;
+    div.style.opacity = element.opacity;
+
+    if (element.type === 'text') {
+        div.textContent = element.text;
+        div.style.fontSize = element.fontSize + 'px';
+        div.style.color = element.color;
+        div.style.display = 'flex';
+        div.style.alignItems = 'center';
+        div.style.justifyContent = 'center';
+        div.style.padding = '10px';
+        div.style.wordWrap = 'break-word';
+        div.style.textAlign = 'center';
+
+        // Double click to edit text
+        div.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            editTextInline(element, div);
+        });
+    }
