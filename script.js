@@ -45,3 +45,26 @@ function createREc() {
     updateLayers();
     saveDesign();
 }
+
+function createText() {
+    const element = {
+        id: 'element-' + nextId++,
+        type: 'text',
+        x: 100,
+        y: 100,
+        width: 200,
+        height: 60,
+        rotation: 0,
+        backgroundColor: 'transparent',
+        text: 'Double click to edit',
+        fontSize: 18,
+        color: '#000',
+        opacity: currentOpacity,
+        zIndex: elements.length
+    };
+    elements.push(element);
+    renderElement(element);
+    selectElement(element);
+    updateLayers();
+    saveDesign();
+}
