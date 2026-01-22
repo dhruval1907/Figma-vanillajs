@@ -174,3 +174,27 @@ function startDrag(e) {
 
     e.preventDefault();
 }
+// mouse drage kare to
+ document.addEventListener('mousemove', (e) => {
+            if (!selectedElement) return;
+
+            const deltaX = e.clientX - dragStartX;
+            const deltaY = e.clientY - dragStartY;
+
+            if (isDragging) {
+                // Dragging element
+                let newX = elementStartX + deltaX;
+                let newY = elementStartY + deltaY;
+
+                // Constrain to canvas
+                newX = Math.max(0, Math.min(newX, canvas.offsetWidth - selectedElement.width));
+                newY = Math.max(0, Math.min(newY, canvas.offsetHeight - selectedElement.height));
+
+                selectedElement.x = Math.round(newX);
+                selectedElement.y = Math.round(newY);
+
+                const div = document.getElementById(selectedElement.id);
+                div.style.left = selectedElement.x + 'px';
+                div.style.top = selectedElement.y + 'px';
+
+                updateProperties();
