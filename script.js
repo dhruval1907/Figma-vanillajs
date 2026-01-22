@@ -152,3 +152,7 @@ function editTextInline(element, div) {
         e.stopPropagation();
     });
 }
+
+function startDrage(){
+    
+}
