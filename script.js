@@ -152,7 +152,25 @@ function editTextInline(element, div) {
         e.stopPropagation();
     });
 }
+// drag hoga to 
+function startDrag(e) {
+    if (e.target.classList.contains('resize-handle')) {
+        isResizing = true;
+        resizeHandle = e.target.dataset.handle;
+        e.stopPropagation();
+    } else if (e.target.tagName !== 'TEXTAREA') {
+        isDragging = true;
+    }
 
-function startDrage(){
-    
+    const element = elements.find(el => el.id === e.currentTarget.id);
+    selectElement(element);
+
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    elementStartX = element.x;
+    elementStartY = element.y;
+    elementStartWidth = element.width;
+    elementStartHeight = element.height;
+
+    e.preventDefault();
 }
