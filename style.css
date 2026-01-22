@@ -16,5 +16,75 @@ html, body {
 main{
   height: 100%;
   width: 100%;
-  background:linear-gradient(white,rgba(0, 0, 0, 0.435),rgba(0, 0, 0, 0.839)) ;
+  background:linear-gradient(white) ;
+}
+
+nav{
+  padding: 1.5rem ;
+  background-color: rgba(0, 0, 0, 0.885);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+h1{
+  font-size: 25px;
+  font-weight: 700 !important;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  font-weight: 500;
+}
+
+.element{
+  display: flex;
+  gap: 2rem;
+}
+
+
+button{
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.405);
+  font-size: 15px;
+  color: white;
+}
+
+button:target{
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
+}
+
+.main-div{
+  height: 90.5%;
+  width: 100%;
+  /* background-color: red; */
+  display: flex;
+}
+
+.main-part1{
+  height: 100%;
+  /* background-color: red; */
+  width: 15%;
+}
+.main-part2{
+  height: 100%;
+  padding: 3rem;
+  width: 75%;
+  background-color: rgba(128, 128, 128, 0.331);
+}
+#main-part2{
+  height: 100%;
+  width: 100%;
+  background-color: white;
+  border-radius: 10px;
+}
+.main-part3{
+  height: 100%;
+  width: 15%;
 }
