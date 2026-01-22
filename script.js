@@ -46,6 +46,8 @@ function createREc() {
     saveDesign();
 }
 
+// isse create honge element jo tum styling karne donge
+
 function createText() {
     const element = {
         id: 'element-' + nextId++,
@@ -68,6 +70,8 @@ function createText() {
     updateLayers();
     saveDesign();
 }
+
+// isse render honge element jo tum styling donge
 
 function renderElem(element) {
     const div = document.createElement('div');
@@ -99,3 +103,52 @@ function renderElem(element) {
             editTextInline(element, div);
         });
     }
+
+    const handles = ['nw', 'ne', 'sw', 'se'];
+    handles.forEach(pos => {
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle ' + pos;
+        handle.dataset.handle = pos;
+        div.appendChild(handle);
+    });
+    div.addEventListener('mousedown', startDrag);
+    canvas.appendChild(div);
+}
+
+// editing text part in th e line 
+
+function editTextInline(element, div) {
+    const input = document.createElement('textarea');
+    input.value = element.text;
+    input.style.width = '100%';
+    input.style.height = '100%';
+    input.style.border = 'none';
+    input.style.background = 'transparent';
+    input.style.color = element.color;
+    input.style.fontSize = element.fontSize + 'px';
+    input.style.textAlign = 'center';
+    input.style.resize = 'none';
+    input.style.outline = '2px solid #5e9eff';
+    input.style.fontFamily = 'inherit';
+
+    div.textContent = '';
+    div.appendChild(input);
+    input.focus();
+    input.select();
+
+    const finishEdit = () => {
+        element.text = input.value;
+        div.removeChild(input);
+        div.textContent = element.text;
+        updateProperties();
+        saveDesign();
+    };
+
+    input.addEventListener('blur', finishEdit);
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            finishEdit();
+        }
+        e.stopPropagation();
+    });
+}
