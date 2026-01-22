@@ -175,26 +175,44 @@ function startDrag(e) {
     e.preventDefault();
 }
 // mouse drage kare to
- document.addEventListener('mousemove', (e) => {
-            if (!selectedElement) return;
+document.addEventListener('mousemove', (e) => {
+    if (!selectedElement) return;
 
-            const deltaX = e.clientX - dragStartX;
-            const deltaY = e.clientY - dragStartY;
+    const deltaX = e.clientX - dragStartX;
+    const deltaY = e.clientY - dragStartY;
 
-            if (isDragging) {
-                // Dragging element
-                let newX = elementStartX + deltaX;
-                let newY = elementStartY + deltaY;
+    if (isDragging) {
+        // Dragging element
+        let newX = elementStartX + deltaX;
+        let newY = elementStartY + deltaY;
 
-                // Constrain to canvas
-                newX = Math.max(0, Math.min(newX, canvas.offsetWidth - selectedElement.width));
-                newY = Math.max(0, Math.min(newY, canvas.offsetHeight - selectedElement.height));
+        // Constrain to canvas
+        newX = Math.max(0, Math.min(newX, canvas.offsetWidth - selectedElement.width));
+        newY = Math.max(0, Math.min(newY, canvas.offsetHeight - selectedElement.height));
 
-                selectedElement.x = Math.round(newX);
-                selectedElement.y = Math.round(newY);
+        selectedElement.x = Math.round(newX);
+        selectedElement.y = Math.round(newY);
 
-                const div = document.getElementById(selectedElement.id);
-                div.style.left = selectedElement.x + 'px';
-                div.style.top = selectedElement.y + 'px';
+        const div = document.getElementById(selectedElement.id);
+        div.style.left = selectedElement.x + 'px';
+        div.style.top = selectedElement.y + 'px';
 
-                updateProperties();
+        updateProperties();
+    }
+    else if (isResizing) {
+        // Resizing element
+        let newWidth = elementStartWidth;
+        let newHeight = elementStartHeight;
+        let newX = elementStartX;
+        let newY = elementStartY;
+
+        if (resizeHandle.includes('e')) {
+            newWidth = Math.max(50, elementStartWidth + deltaX);
+        }
+        if (resizeHandle.includes('w')) {
+            const widthChange = elementStartWidth - deltaX;
+            if (widthChange >= 50) {
+                newWidth = widthChange;
+                newX = elementStartX + deltaX;
+            }
+        }
