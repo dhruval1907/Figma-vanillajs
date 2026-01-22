@@ -5,97 +5,118 @@
     <meta charset="UTF-8">d
     <title>DOM Design Editor</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 
 <body>
-
-    <!-- HEADER -->
-    <div class="topbar">
-        <div class="brand">
-            <div class="brand-icon"><i class="fas fa-pen-nib"></i></div>
-            <span>DOM Design Editor</span>
-        </div>
-
-        <div class="top-actions">
-            <button class="btn">Save</button>
-            <button class="btn">Load</button>
-            <button class="btn primary">Export</button>
-        </div>
+    <!-- Top Toolbar -->
+    <div class="top-toolbar">
+        <button onclick="saveDesign()" title="Save">💾</button>
+        <button onclick="exportJSON()" title="Export JSON">📥</button>
+        <button onclick="exportHTML()" title="Export HTML">📄</button>
     </div>
 
-    <!-- MAIN -->
-    <div class="layout">
-
-        <!-- LEFT PANEL -->
-        <div class="left">
-            <h4 class="title">Tools</h4>
-
-            <div class="tools">
-                <button class="tool active">Rectangle</button>
-                <button class="tool">Text</button>
+    <!-- Left Toolbar -->
+    <div class="left-toolbar">
+        <div class="toolbar-section">
+            <h3>Stroke</h3>
+            <div class="color-grid">
+                <div class="color-btn" style="background: #000" onclick="setStrokeColor('#000')" title="Black"></div>
+                <div class="color-btn" style="background: #e74c3c" onclick="setStrokeColor('#e74c3c')" title="Red">
+                </div>
+                <div class="color-btn" style="background: #27ae60" onclick="setStrokeColor('#27ae60')" title="Green">
+                </div>
+                <div class="color-btn" style="background: #3498db" onclick="setStrokeColor('#3498db')" title="Blue">
+                </div>
+                <div class="color-btn" style="background: #f39c12" onclick="setStrokeColor('#f39c12')" title="Orange">
+                </div>
+                <div class="color-btn" style="background: #fff; border-color: #666" onclick="setStrokeColor('#fff')"
+                    title="White"></div>
             </div>
-
-            <h4 class="title">Fill & Stroke</h4>
-
-            <label>Background</label>
-            <input type="color">
-
-            <label>Stroke</label>
-            <input type="color">
-
-            <label>Stroke Width</label>
-            <input type="range" min="0" max="10">
-
-            <h4 class="title">Size</h4>
-
-            <input type="number" placeholder="Width">
-            <input type="number" placeholder="Height">
-
-            <label>Opacity</label>
-            <input type="range" min="0" max="100">
         </div>
 
-        <!-- CANVAS -->
-        <div class="center">
-            <div class="canvas-head">
-                <span>Design Canvas</span>
-                <span>0 Elements</span>
+        <div class="toolbar-section">
+            <h3>Background</h3>
+            <div class="color-grid">
+                <div class="color-btn" style="background: #000" onclick="setBackgroundColor('#000')" title="Black">
+                </div>
+                <div class="color-btn" style="background: #e74c3c" onclick="setBackgroundColor('#e74c3c')" title="Red">
+                </div>
+                <div class="color-btn" style="background: #27ae60" onclick="setBackgroundColor('#27ae60')"
+                    title="Green"></div>
+                <div class="color-btn" style="background: #3498db" onclick="setBackgroundColor('#3498db')" title="Blue">
+                </div>
+                <div class="color-btn" style="background: #2c3e50" onclick="setBackgroundColor('#2c3e50')"
+                    title="Dark Blue"></div>
+                <div class="color-btn" style="background: #5e9eff" onclick="setBackgroundColor('#5e9eff')"
+                    title="Light Blue"></div>
             </div>
+        </div>
 
-            <div class="canvas-wrap">
-                <div class="canvas">
-                    <div class="empty">
-                        <h3>Canvas is Empty</h3>
-                        <p>Add elements from left tools</p>
-                    </div>
+        <div class="toolbar-section">
+            <h3>Fill</h3>
+            <div class="color-grid">
+                <div class="color-btn"
+                    style="background: linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc), linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc); background-size: 8px 8px; background-position: 0 0, 4px 4px;"
+                    onclick="setBackgroundColor('transparent')" title="Transparent"></div>
+                <div class="color-btn" style="background: #95a5a6" onclick="setBackgroundColor('#95a5a6')" title="Gray">
+                </div>
+                <div class="color-btn" style="background: #34495e" onclick="setBackgroundColor('#34495e')" title="Dark">
+                </div>
+                <div class="color-btn" style="background: #9b59b6" onclick="setBackgroundColor('#9b59b6')"
+                    title="Purple"></div>
+            </div>
+        </div>
+
+        <div class="toolbar-section">
+            <button class="tool-btn" onclick="createRectangle()">□ Rectangle</button>
+            <button class="tool-btn" onclick="createText()">T Text</button>
+        </div>
+
+        <div class="toolbar-section">
+            <h3>Opacity</h3>
+            <div class="slider-container">
+                <input type="range" min="0" max="100" value="100" id="opacity-slider"
+                    oninput="updateOpacity(this.value)">
+                <div class="slider-label">
+                    <span>0</span>
+                    <span>100</span>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- RIGHT PANEL -->
-        <div class="right">
-            <h4 class="title">Layers</h4>
+    <!-- Canvas -->
+    <div class="canvas-container">
+        <div id="canvas"></div>
+    </div>
 
-            <div class="layers">
-                <p>No elements</p>
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <div class="panel-section">
+            <h3>Properties</h3>
+            <div id="properties-content">
+                <div class="empty-state">Select an element to edit properties</div>
             </div>
-
-            <h4 class="title">Actions</h4>
-
-            <button class="btn">Move Up</button>
-            <button class="btn">Move Down</button>
-            <button class="btn danger">Delete</button>
-            <button class="btn">Clear</button>
         </div>
 
+        <div class="panel-section">
+            <h3>Layers</h3>
+            <div id="layers-list">
+                <div class="empty-state">No layers yet</div>
+            </div>
+        </div>
     </div>
 
-    <!-- FOOTER -->
-    <div class="status">
-        <span>Ready</span>
-        <span>DEL = Delete | ESC = Deselect</span>
+    <!-- Bottom Controls -->
+    <div class="bottom-controls">
+        <div class="zoom-control">
+            <button onclick="zoomOut()">−</button>
+            <span id="zoom-level">100%</span>
+            <button onclick="zoomIn()">+</button>
+        </div>
     </div>
+
 
 </body>
 
