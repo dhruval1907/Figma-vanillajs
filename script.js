@@ -1,32 +1,27 @@
-// all things are coming to the this array like rec and all
-let elements = []
 
-let selectelm = null;
-
-let isDragging = false;
-
-let isResizing = false;
-
+let elements = [];
+let selectedElement = null;
 let nextId = 1;
-
+let isDragging = false;
+let isResizing = false;
 let resizeHandle = null;
+let dragStartX = 0;
+let dragStartY = 0;
 let elementStartX = 0;
 let elementStartY = 0;
 let elementStartWidth = 0;
 let elementStartHeight = 0;
 let currentOpacity = 1;
 
-
 const canvas = document.getElementById('canvas');
 
-// reload hone pr means load hote hai isme set ho jayegs
+// Load saved design on startup
 window.addEventListener('load', () => {
     loadDesign();
 });
 
-// rectangle banne ke liye
-
-function createREc() {
+// Create Rectangle
+function createRectangle() {
     const element = {
         id: 'element-' + nextId++,
         type: 'rectangle',
@@ -38,16 +33,15 @@ function createREc() {
         backgroundColor: '#3498db',
         opacity: currentOpacity,
         zIndex: elements.length
-    }
-    element.push(element)
-    renderElem(element)
+    };
+    elements.push(element);
+    renderElement(element);
     selectElement(element);
     updateLayers();
     saveDesign();
 }
 
-// isse create honge element jo tum styling karne donge
-
+// Create Text
 function createText() {
     const element = {
         id: 'element-' + nextId++,
@@ -65,15 +59,14 @@ function createText() {
         zIndex: elements.length
     };
     elements.push(element);
-    renderElem(element);
+    renderElement(element);
     selectElement(element);
     updateLayers();
     saveDesign();
 }
 
-// isse render honge element jo tum styling donge
-
-function renderElem(element) {
+// Render Element on Canvas
+function renderElement(element) {
     const div = document.createElement('div');
     div.id = element.id;
     div.className = 'element';
@@ -104,6 +97,7 @@ function renderElem(element) {
         });
     }
 
+    // Add resize handles
     const handles = ['nw', 'ne', 'sw', 'se'];
     handles.forEach(pos => {
         const handle = document.createElement('div');
@@ -111,12 +105,14 @@ function renderElem(element) {
         handle.dataset.handle = pos;
         div.appendChild(handle);
     });
+
+    // Event listeners
     div.addEventListener('mousedown', startDrag);
+
     canvas.appendChild(div);
 }
 
-// editing text part in th e line 
-
+// Edit text inline
 function editTextInline(element, div) {
     const input = document.createElement('textarea');
     input.value = element.text;
@@ -152,7 +148,8 @@ function editTextInline(element, div) {
         e.stopPropagation();
     });
 }
-// drag hoga to 
+
+// Start Drag or Resize
 function startDrag(e) {
     if (e.target.classList.contains('resize-handle')) {
         isResizing = true;
@@ -174,7 +171,8 @@ function startDrag(e) {
 
     e.preventDefault();
 }
-// mouse drage kare to
+
+// Mouse Move
 document.addEventListener('mousemove', (e) => {
     if (!selectedElement) return;
 
@@ -198,8 +196,7 @@ document.addEventListener('mousemove', (e) => {
         div.style.top = selectedElement.y + 'px';
 
         updateProperties();
-    }
-    else if (isResizing) {
+    } else if (isResizing) {
         // Resizing element
         let newWidth = elementStartWidth;
         let newHeight = elementStartHeight;
@@ -216,3 +213,413 @@ document.addEventListener('mousemove', (e) => {
                 newX = elementStartX + deltaX;
             }
         }
+        if (resizeHandle.includes('s')) {
+            newHeight = Math.max(30, elementStartHeight + deltaY);
+        }
+        if (resizeHandle.includes('n')) {
+            const heightChange = elementStartHeight - deltaY;
+            if (heightChange >= 30) {
+                newHeight = heightChange;
+                newY = elementStartY + deltaY;
+            }
+        }
+
+        // Constrain to canvas
+        if (newX < 0) {
+            newWidth += newX;
+            newX = 0;
+        }
+        if (newY < 0) {
+            newHeight += newY;
+            newY = 0;
+        }
+        if (newX + newWidth > canvas.offsetWidth) {
+            newWidth = canvas.offsetWidth - newX;
+        }
+        if (newY + newHeight > canvas.offsetHeight) {
+            newHeight = canvas.offsetHeight - newY;
+        }
+
+        selectedElement.x = Math.round(newX);
+        selectedElement.y = Math.round(newY);
+        selectedElement.width = Math.round(newWidth);
+        selectedElement.height = Math.round(newHeight);
+
+        const div = document.getElementById(selectedElement.id);
+        div.style.left = selectedElement.x + 'px';
+        div.style.top = selectedElement.y + 'px';
+        div.style.width = selectedElement.width + 'px';
+        div.style.height = selectedElement.height + 'px';
+
+        updateProperties();
+    }
+});
+
+function clearCanvas() {
+    if (!confirm('Clear entire canvas?')) return;
+
+    elements = [];
+    selectedElement = null;
+    canvas.innerHTML = '';
+
+    updateLayers();
+    updateProperties();
+    localStorage.removeItem('visual-editor-design');
+}
+
+// Mouse Up
+document.addEventListener('mouseup', () => {
+    if (isDragging || isResizing) {
+        saveDesign();
+    }
+    isDragging = false;
+    isResizing = false;
+    resizeHandle = null;
+});
+
+// Canvas Click (Deselect)
+canvas.addEventListener('mousedown', (e) => {
+    if (e.target === canvas) {
+        deselectElement();
+    }
+});
+
+// Select Element
+function selectElement(element) {
+    if (selectedElement) {
+        const prevDiv = document.getElementById(selectedElement.id);
+        if (prevDiv) prevDiv.classList.remove('selected');
+    }
+
+    selectedElement = element;
+    const div = document.getElementById(element.id);
+    if (div) {
+        div.classList.add('selected');
+    }
+
+    // Update opacity slider
+    document.getElementById('opacity-slider').value = (element.opacity * 100);
+
+    updateProperties();
+    updateLayers();
+}
+
+// Deselect Element
+function deselectElement() {
+    if (selectedElement) {
+        const div = document.getElementById(selectedElement.id);
+        if (div) div.classList.remove('selected');
+        selectedElement = null;
+        document.getElementById('opacity-slider').value = 100;
+        updateProperties();
+        updateLayers();
+    }
+}
+
+// Update Properties Panel
+function updateProperties() {
+    const container = document.getElementById('properties-content');
+
+    if (!selectedElement) {
+        container.innerHTML = '<div class="empty-state">Select an element to edit properties</div>';
+        return;
+    }
+
+    let html = `
+                        <div class="property-row">
+                            <label>Width</label>
+                            <input type="number" id="prop-width" value="${selectedElement.width}" min="10">
+                        </div>
+                        <div class="property-row">
+                            <label>Height</label>
+                            <input type="number" id="prop-height" value="${selectedElement.height}" min="10">
+                        </div>
+                        <div class="property-row">
+                            <label>X Position</label>
+                            <input type="number" id="prop-x" value="${selectedElement.x}" min="0">
+                        </div>
+                        <div class="property-row">
+                            <label>Y Position</label>
+                            <input type="number" id="prop-y" value="${selectedElement.y}" min="0">
+                        </div>
+                        <div class="property-row">
+                            <label>Rotation (degrees)</label>
+                            <input type="number" id="prop-rotation" value="${selectedElement.rotation}" step="1">
+                        </div>
+                        <div class="property-row">
+                            <label>Background Color</label>
+                            <input type="color" id="prop-bg" value="${selectedElement.backgroundColor === 'transparent' ? '#ffffff' : selectedElement.backgroundColor}">
+                        </div>
+                        `;
+
+    if (selectedElement.type === 'text') {
+        html += `
+                    <div class="property-row">
+                        <label>Text Content</label>
+                        <textarea id="prop-text">${selectedElement.text}</textarea>
+                    </div>
+                    <div class="property-row">
+                        <label>Font Size</label>
+                        <input type="number" id="prop-fontsize" value="${selectedElement.fontSize}" min="8">
+                    </div>
+                    <div class="property-row">
+                        <label>Text Color</label>
+                        <input type="color" id="prop-color" value="${selectedElement.color}">
+                    </div>
+                `;
+    }
+
+    container.innerHTML = html;
+
+    // Add event listeners
+    document.getElementById('prop-width').addEventListener('input', updateElementFromProperties);
+    document.getElementById('prop-height').addEventListener('input', updateElementFromProperties);
+    document.getElementById('prop-x').addEventListener('input', updateElementFromProperties);
+    document.getElementById('prop-y').addEventListener('input', updateElementFromProperties);
+    document.getElementById('prop-rotation').addEventListener('input', updateElementFromProperties);
+    document.getElementById('prop-bg').addEventListener('input', updateElementFromProperties);
+
+    if (selectedElement.type === 'text') {
+        document.getElementById('prop-text').addEventListener('input', updateElementFromProperties);
+        document.getElementById('prop-fontsize').addEventListener('input', updateElementFromProperties);
+        document.getElementById('prop-color').addEventListener('input', updateElementFromProperties);
+    }
+}
+
+// Update Element from Properties
+function updateElementFromProperties() {
+    if (!selectedElement) return;
+
+    const width = Math.max(10, parseInt(document.getElementById('prop-width').value) || 10);
+    const height = Math.max(10, parseInt(document.getElementById('prop-height').value) || 10);
+    const x = Math.max(0, parseInt(document.getElementById('prop-x').value) || 0);
+    const y = Math.max(0, parseInt(document.getElementById('prop-y').value) || 0);
+    const rotation = parseInt(document.getElementById('prop-rotation').value) || 0;
+    const bg = document.getElementById('prop-bg').value;
+
+    selectedElement.width = width;
+    selectedElement.height = height;
+    selectedElement.x = x;
+    selectedElement.y = y;
+    selectedElement.rotation = rotation;
+    selectedElement.backgroundColor = bg;
+
+    if (selectedElement.type === 'text') {
+        selectedElement.text = document.getElementById('prop-text').value;
+        selectedElement.fontSize = Math.max(8, parseInt(document.getElementById('prop-fontsize').value) || 16);
+        selectedElement.color = document.getElementById('prop-color').value;
+    }
+
+    const div = document.getElementById(selectedElement.id);
+    div.style.width = width + 'px';
+    div.style.height = height + 'px';
+    div.style.left = x + 'px';
+    div.style.top = y + 'px';
+    div.style.transform = `rotate(${rotation}deg)`;
+    div.style.backgroundColor = bg;
+
+    if (selectedElement.type === 'text') {
+        div.textContent = selectedElement.text;
+        div.style.fontSize = selectedElement.fontSize + 'px';
+        div.style.color = selectedElement.color;
+    }
+
+    saveDesign();
+    updateLayers();
+}
+
+/* =========================
+   OPACITY
+========================= */
+function updateOpacity(value) {
+    currentOpacity = value / 100;
+    if (!selectedElement) return;
+    selectedElement.opacity = currentOpacity;
+    document.getElementById(selectedElement.id).style.opacity = currentOpacity;
+    saveDesign();
+}
+
+/* =========================
+   COLORS
+========================= */
+function setStrokeColor(color) {
+    if (!selectedElement) return;
+    document.getElementById(selectedElement.id).style.border = `2px solid ${color}`;
+}
+
+function setBackgroundColor(color) {
+    if (!selectedElement) return;
+    selectedElement.backgroundColor = color;
+    document.getElementById(selectedElement.id).style.backgroundColor = color;
+    updateProperties();
+    saveDesign();
+}
+
+/* =========================
+   LAYERS PANEL
+========================= */
+function updateLayers() {
+    const container = document.getElementById('layers-list');
+
+    if (elements.length === 0) {
+        container.innerHTML = '<div class="empty-state">No layers yet</div>';
+        return;
+    }
+
+    container.innerHTML = '';
+    [...elements].reverse().forEach(el => {
+        const item = document.createElement('div');
+        item.className = 'layer-item' + (selectedElement === el ? ' selected' : '');
+        item.innerHTML = `
+                        <span class="layer-name">${el.type} (${el.id})</span>
+                        <div class="layer-controls">
+                            <button onclick="deleteLayer('${el.id}')">✕</button>
+                        </div>
+                        `;
+        item.onclick = () => selectElement(el);
+        container.appendChild(item);
+    });
+}
+
+function deleteLayer(id) {
+    const index = elements.findIndex(el => el.id === id);
+    if (index === -1) return;
+
+    const el = elements[index];
+    document.getElementById(el.id).remove();
+    elements.splice(index, 1);
+    selectedElement = null;
+    updateLayers();
+    updateProperties();
+    saveDesign();
+}
+
+/* =========================
+   SAVE / LOAD
+========================= */
+function saveDesign() {
+    localStorage.setItem('visual-editor-design', JSON.stringify(elements));
+}
+
+function loadDesign() {
+    const saved = localStorage.getItem('visual-editor-design');
+    if (!saved) return;
+
+    elements = JSON.parse(saved);
+    canvas.innerHTML = '';
+    elements.forEach(el => {
+        renderElement(el);
+        nextId++;
+    });
+    updateLayers();
+}
+
+/* =========================
+   EXPORT
+========================= */
+function exportJSON() {
+    const data = JSON.stringify(elements, null, 2);
+    downloadFile(data, 'design.json', 'application/json');
+}
+
+function exportHTML() {
+    let html = `<div style="position:relative;width:800px;height:600px;">`;
+    elements.forEach(el => {
+        html += `
+                <div style="
+                    position:absolute;
+                    left:${el.x}px;
+                    top:${el.y}px;
+                    width:${el.width}px;
+                    height:${el.height}px;
+                    background:${el.backgroundColor};
+                    opacity:${el.opacity};
+                    transform:rotate(${el.rotation}deg);
+                ">
+                ${el.type === 'text' ? el.text : ''}
+                </div>`;
+    });
+    html += `</div>`;
+    downloadFile(html, 'design.html', 'text/html');
+}
+
+function downloadFile(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+}
+
+/* =========================
+   ZOOM
+========================= */
+let zoom = 1;
+
+function zoomIn() {
+    zoom = Math.min(2, zoom + 0.1);
+    applyZoom();
+}
+
+function zoomOut() {
+    zoom = Math.max(0.5, zoom - 0.1);
+    applyZoom();
+}
+
+function applyZoom() {
+    canvas.style.transform = `scale(${zoom})`;
+    document.getElementById('zoom-level').textContent = Math.round(zoom * 100) + '%';
+}
+
+/* =========================
+   KEYBOARD INTERACTIONS
+========================= */
+document.addEventListener('keydown', (e) => {
+    // sirf jab element selected ho
+    if (!selectedElement) return;
+
+    const step = 5;
+    let moved = false;
+
+    switch (e.key) {
+        case 'Delete':
+        case 'Backspace':
+            deleteLayer(selectedElement.id);
+            return;
+
+        case 'ArrowUp':
+            selectedElement.y = Math.max(0, selectedElement.y - step);
+            moved = true;
+            break;
+
+        case 'ArrowDown':
+            selectedElement.y = Math.min(
+                canvas.offsetHeight - selectedElement.height,
+                selectedElement.y + step
+            );
+            moved = true;
+            break;
+
+        case 'ArrowLeft':
+            selectedElement.x = Math.max(0, selectedElement.x - step);
+            moved = true;
+            break;
+
+        case 'ArrowRight':
+            selectedElement.x = Math.min(
+                canvas.offsetWidth - selectedElement.width,
+                selectedElement.x + step
+            );
+            moved = true;
+            break;
+    }
+
+    if (moved) {
+        const div = document.getElementById(selectedElement.id);
+        div.style.left = selectedElement.x + 'px';
+        div.style.top = selectedElement.y + 'px';
+
+        updateProperties();
+        saveDesign();
+    }
+});

@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">d
+    <meta charset="UTF-8">
     <title>DOM Design Editor</title>
     <link rel="stylesheet" href="style.css">
 
@@ -108,16 +108,27 @@
         </div>
     </div>
 
-    <!-- Bottom Controls -->
-    <div class="bottom-controls">
-        <div class="zoom-control">
+
+    <div class="bottom-controls" style="display: flex;width: 100%;padding: 0px ;background-color: ;align-items: center;justify-content: space-between;">
+        
+        <!-- RIGHT SIDE: Existing Controls -->
+        <div class="zoom-control" ">
             <button onclick="zoomOut()">−</button>
             <span id="zoom-level">100%</span>
             <button onclick="zoomIn()">+</button>
+            <button onclick="clearCanvas()" title="Clear Canvas">🧹</button>
+        </div>
+        <!-- LEFT SIDE: Keyboard Instructions -->
+        <div style="color:#b4b4b4;font-size:12px;width: 20%;">
+            <strong>Keyboard:</strong>
+            <span>↑ ↓ ← → Move</span> |
+            <span>Delete Remove</span>
         </div>
     </div>
 
 
+
+    <script src="script.js"></script>
 </body>
 
 </html>
