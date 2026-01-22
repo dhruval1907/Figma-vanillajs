@@ -2,35 +2,83 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Figma By AF</title>
+    <meta charset="UTF-8">d
+    <title>DOM Design Editor</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
-    <main>
-        <nav>
-            <h1>Figma </h1>
-            <div class="element">
-                <button>Rectangle</button>
-                <button>Text</button>
-                <button>Clear Canvas</button>
+
+    <!-- HEADER -->
+    <div class="topbar">
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-pen-nib"></i></div>
+            <span>DOM Design Editor</span>
+        </div>
+
+        <div class="top-actions">
+            <button class="btn">Save</button>
+            <button class="btn">Load</button>
+            <button class="btn primary">Export</button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="layout">
+
+        <!-- LEFT PANEL -->
+        <div class="left">
+            <h4 class="title">Tools</h4>
+
+            <div class="tools">
+                <button class="tool active">Rectangle</button>
+                <button class="tool">Text</button>
             </div>
-        </nav>
-        <div class="main-div">
-            <div class="main-part1">
-                <div class="main-part11"></div>
+
+        
+
+        <!-- CANVAS -->
+        <div class="center">
+            <div class="canvas-head">
+                <span>Design Canvas</span>
+                <span>0 Elements</span>
             </div>
-            <div class="main-part2">
-                <div id="main-part2"></div>
-            </div>
-            <div class="main-part3">
-                <div class="main-part11">aa</div>
+
+            <div class="canvas-wrap">
+                <div class="canvas">
+                    <div class="empty">
+                        <h3>Canvas is Empty</h3>
+                        <p>Add elements from left tools</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </main>
-    <script src="script.js"></script>
+
+        <!-- RIGHT PANEL -->
+        <div class="right">
+            <h4 class="title">Layers</h4>
+
+            <div class="layers">
+                <p>No elements</p>
+            </div>
+
+            <h4 class="title">Actions</h4>
+
+            <button class="btn">Move Up</button>
+            <button class="btn">Move Down</button>
+            <button class="btn danger">Delete</button>
+            <button class="btn">Clear</button>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="status">
+        <span>Ready</span>
+        <span>DEL = Delete | ESC = Deselect</span>
+    </div>
+
 </body>
 
 </html>
