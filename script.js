@@ -494,9 +494,6 @@ function deleteLayer(id) {
     saveDesign();
 }
 
-/* =========================
-   SAVE / LOAD
-========================= */
 function saveDesign() {
     localStorage.setItem('visual-editor-design', JSON.stringify(elements));
 }
@@ -514,9 +511,6 @@ function loadDesign() {
     updateLayers();
 }
 
-/* =========================
-   EXPORT
-========================= */
 function exportJSON() {
     const data = JSON.stringify(elements, null, 2);
     downloadFile(data, 'design.json', 'application/json');
@@ -551,9 +545,6 @@ function downloadFile(content, filename, type) {
     a.click();
 }
 
-/* =========================
-   ZOOM
-========================= */
 let zoom = 1;
 
 function zoomIn() {
@@ -571,3 +562,52 @@ function applyZoom() {
     document.getElementById('zoom-level').textContent = Math.round(zoom * 100) + '%';
 }
 
+document.addEventListener('keydown', (e) => {
+    // sirf jab element selected ho
+    if (!selectedElement) return;
+
+    const step = 5;
+    let moved = false;
+
+    switch (e.key) {
+        case 'Delete':
+        case 'Backspace':
+            deleteLayer(selectedElement.id);
+            return;
+
+        case 'ArrowUp':
+            selectedElement.y = Math.max(0, selectedElement.y - step);
+            moved = true;
+            break;
+
+        case 'ArrowDown':
+            selectedElement.y = Math.min(
+                canvas.offsetHeight - selectedElement.height,
+                selectedElement.y + step
+            );
+            moved = true;
+            break;
+
+        case 'ArrowLeft':
+            selectedElement.x = Math.max(0, selectedElement.x - step);
+            moved = true;
+            break;
+
+        case 'ArrowRight':
+            selectedElement.x = Math.min(
+                canvas.offsetWidth - selectedElement.width,
+                selectedElement.x + step
+            );
+            moved = true;
+            break;
+    }
+
+    if (moved) {
+        const div = document.getElementById(selectedElement.id);
+        div.style.left = selectedElement.x + 'px';
+        div.style.top = selectedElement.y + 'px';
+
+        updateProperties();
+        saveDesign();
+    }
+});
