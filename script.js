@@ -255,7 +255,7 @@ document.addEventListener('mousemove', (e) => {
         updateProperties();
     }
 });
-
+// agar canvas  clear karna ho to elem jo save hoga usko hi wo delete kar dega
 function clearCanvas() {
     if (!confirm('Clear entire canvas?')) return;
 
@@ -317,7 +317,7 @@ function deselectElement() {
     }
 }
 
-// Update Properties Panel
+// ye property panel hai isme jab kuch chnage honge wo jo element honga usme bhi dekhne ko milega
 function updateProperties() {
     const container = document.getElementById('properties-content');
 
