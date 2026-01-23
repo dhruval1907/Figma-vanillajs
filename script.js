@@ -98,7 +98,7 @@ function renderElement(element) {
         });
     }
 
-    // Add resize handles
+    // this is kind of gives this to the class according to the this arry they resize the elem
     const handles = ['nw', 'ne', 'sw', 'se'];
     handles.forEach(pos => {
         const handle = document.createElement('div');
