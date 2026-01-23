@@ -1,4 +1,4 @@
-
+// sare elements is isme me aayenge 
 let elements = [];
 let selectedElement = null;
 let nextId = 1;
@@ -13,14 +13,15 @@ let elementStartWidth = 0;
 let elementStartHeight = 0;
 let currentOpacity = 1;
 
+// canvas means main div ko target kiya
 const canvas = document.getElementById('canvas');
 
-// Load saved design on startup
+// loading karne ke liye
 window.addEventListener('load', () => {
     loadDesign();
 });
 
-// Create Rectangle
+// rectangle banane ke liye
 function createRectangle() {
     const element = {
         id: 'element-' + nextId++,
@@ -41,7 +42,7 @@ function createRectangle() {
     saveDesign();
 }
 
-// Create Text
+//  Text banane ke liye
 function createText() {
     const element = {
         id: 'element-' + nextId++,
@@ -65,7 +66,7 @@ function createText() {
     saveDesign();
 }
 
-// Render Element on Canvas
+// jo element uper load kiya usko render karne ke liye
 function renderElement(element) {
     const div = document.createElement('div');
     div.id = element.id;
@@ -428,9 +429,6 @@ function updateElementFromProperties() {
     updateLayers();
 }
 
-/* =========================
-   OPACITY
-========================= */
 function updateOpacity(value) {
     currentOpacity = value / 100;
     if (!selectedElement) return;
@@ -439,9 +437,6 @@ function updateOpacity(value) {
     saveDesign();
 }
 
-/* =========================
-   COLORS
-========================= */
 function setStrokeColor(color) {
     if (!selectedElement) return;
     document.getElementById(selectedElement.id).style.border = `2px solid ${color}`;
@@ -455,9 +450,6 @@ function setBackgroundColor(color) {
     saveDesign();
 }
 
-/* =========================
-   LAYERS PANEL
-========================= */
 function updateLayers() {
     const container = document.getElementById('layers-list');
 
