@@ -486,6 +486,7 @@ function deleteLayer(id) {
     saveDesign();
 }
 
+
 function saveDesign() {
     localStorage.setItem('visual-editor-design', JSON.stringify(elements));
 }
